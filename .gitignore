@@ -1,0 +1,51 @@
+# Python Bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+*.env
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+
+# MySQL Configuration File
+*.my.cnf
+
+# Logs
+*.log
+
+# Environment Variables
+.env
+
+# Database Files
+*.db
+*.sqlite3
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Python Environment Files
+*.python-version
+
+# Coverage reports
+.coverage
+*.cover
+*.py,cover
