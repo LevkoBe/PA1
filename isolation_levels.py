@@ -87,38 +87,42 @@ def read_committed_demo():
             connection2.close()
 
 def repeatable_read_demo():
+    def select(cursor, name):
+        cursor.execute("SELECT balance FROM accounts WHERE name = 'Alice'")
+        balance = cursor.fetchone()[0]
+        print(f"{name}: Alice's balance: {balance}")
+
     connection1 = create_connection()
     connection2 = create_connection()
+    connection3 = create_connection()
     try:
         cursor1 = connection1.cursor()
         cursor2 = connection2.cursor()
+        cursor3 = connection3.cursor()
         print(f"=== REPEATABLE READ ===")
         connection1.start_transaction(isolation_level='REPEATABLE READ')
         connection2.start_transaction(isolation_level='READ COMMITTED')
+        connection3.start_transaction(isolation_level='READ COMMITTED')
 
-        cursor1.execute("SELECT balance FROM accounts WHERE name = 'Alice'")
-        initial_balance = cursor1.fetchone()[0]
-        print(f"Initial Balance (REPEATABLE READ): Alice's balance = {initial_balance}")
+        select(cursor1, 'cursor1')
+        select(cursor3, 'cursor3')
 
         cursor2.execute("UPDATE accounts SET balance = 7000 WHERE name = 'Alice'")
         connection2.commit()
 
-        cursor1.execute("SELECT balance FROM accounts WHERE name = 'Alice'")
-        repeat_balance = cursor1.fetchone()[0]
-        print(f"Repeatable Read: Alice's balance after another transaction's commit = {repeat_balance}")
+        select(cursor1, 'cursor1')
+        select(cursor3, 'cursor3')
 
         connection1.commit()
+        connection3.commit()
     except Error as e:
         print(f"Error: {e}")
     finally:
-        if cursor1:
-            cursor1.close()
-        if connection1 and connection1.is_connected():
-            connection1.close()
-        if cursor2:
-            cursor2.close()
-        if connection2 and connection2.is_connected():
-            connection2.close()
+        for (cursor, connection) in [(cursor1, connection1), (cursor2, connection2), (cursor3, connection3)]:
+            if cursor:
+                cursor.close()
+            if connection and connection.is_connected():
+                connection.close()
 
 def serializable_demo():
     connection1 = create_connection()
